@@ -76,7 +76,7 @@
 //	"net/http"
 //	"net/url"
 //
-//	"github.com/crewjam/saml/samlsp"
+//	"github.com/descope-dev/saml/samlsp"
 //
 // )
 //

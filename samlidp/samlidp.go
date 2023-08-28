@@ -12,8 +12,8 @@ import (
 
 	"github.com/zenazn/goji/web"
 
-	"github.com/crewjam/saml"
-	"github.com/crewjam/saml/logger"
+	"github.com/descope-dev/saml"
+	"github.com/descope-dev/saml/logger"
 )
 
 // Options represent the parameters to New() for creating a new IDP server
