@@ -499,6 +499,32 @@ func (req *IdpAuthnRequest) getACSEndpoint() error {
 		}
 	}
 
+	// Regex match
+	if req.Request.AssertionConsumerServiceURL != "" {
+		for _, spssoDescriptor := range req.ServiceProviderMetadata.SPSSODescriptors {
+			for _, spAssertionConsumerService := range spssoDescriptor.AssertionConsumerServices {
+				if spAssertionConsumerService.LocationRegex.MatchString(req.Request.AssertionConsumerServiceURL) {
+
+					// override the Location with the acs arrived from the request
+					// (this is secured as we are doing this after matching the given location regex)
+					spAssertionConsumerService.Location = req.Request.AssertionConsumerServiceURL
+
+					// explicitly copy loop iterator variables
+					//
+					// c.f. https://github.com/golang/go/wiki/CommonMistakes#using-reference-to-loop-iterator-variable
+					//
+					// (note that I'm pretty sure this isn't strictly necessary because we break out of the loop immediately,
+					// but it certainly doesn't hurt anything and may prevent bugs in the future.)
+					spssoDescriptor, spAssertionConsumerService := spssoDescriptor, spAssertionConsumerService
+
+					req.SPSSODescriptor = &spssoDescriptor
+					req.ACSEndpoint = &spAssertionConsumerService
+					return nil
+				}
+			}
+		}
+	}
+
 	// Some service providers, like the Microsoft Azure AD service provider, issue
 	// assertion requests that don't specify an ACS url at all.
 	if req.Request.AssertionConsumerServiceURL == "" && req.Request.AssertionConsumerServiceIndex == "" {
