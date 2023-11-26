@@ -2,6 +2,7 @@ package saml
 
 import (
 	"encoding/xml"
+	"regexp"
 	"time"
 
 	"github.com/beevik/etree"
@@ -192,11 +193,12 @@ type Endpoint struct {
 //
 // See http://docs.oasis-open.org/security/saml/v2.0/saml-metadata-2.0-os.pdf §2.2.3
 type IndexedEndpoint struct {
-	Binding          string  `xml:"Binding,attr"`
-	Location         string  `xml:"Location,attr"`
-	ResponseLocation *string `xml:"ResponseLocation,attr,omitempty"`
-	Index            int     `xml:"index,attr"`
-	IsDefault        *bool   `xml:"isDefault,attr"`
+	Binding          string         `xml:"Binding,attr"`
+	Location         string         `xml:"Location,attr"`
+	LocationRegex    *regexp.Regexp `xml:"LocationRegex,attr"`
+	ResponseLocation *string        `xml:"ResponseLocation,attr,omitempty"`
+	Index            int            `xml:"index,attr"`
+	IsDefault        *bool          `xml:"isDefault,attr"`
 }
 
 // SSODescriptor represents the SAML complex type SSODescriptor
