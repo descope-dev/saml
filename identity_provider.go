@@ -503,7 +503,7 @@ func (req *IdpAuthnRequest) getACSEndpoint() error {
 	if req.Request.AssertionConsumerServiceURL != "" {
 		for _, spssoDescriptor := range req.ServiceProviderMetadata.SPSSODescriptors {
 			for _, spAssertionConsumerService := range spssoDescriptor.AssertionConsumerServices {
-				if spAssertionConsumerService.LocationRegex.MatchString(req.Request.AssertionConsumerServiceURL) {
+				if spAssertionConsumerService.LocationRegex != nil && spAssertionConsumerService.LocationRegex.MatchString(req.Request.AssertionConsumerServiceURL) {
 
 					// override the Location with the acs arrived from the request
 					// (this is secured as we are doing this after matching the given location regex)
