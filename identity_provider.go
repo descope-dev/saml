@@ -265,6 +265,7 @@ func (idp *IdentityProvider) ServeSSO(w http.ResponseWriter, r *http.Request) {
 // type require us to know a registered service provider and (optionally) the RelayState
 // that will be passed to the application.
 func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Request, serviceProviderID string, relayState string) {
+	idp.Logger.Println("Starting ServeIDPInitiated")
 	req := &IdpAuthnRequest{
 		IDP:         idp,
 		HTTPRequest: r,
@@ -272,6 +273,7 @@ func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Re
 		Now:         TimeNow(),
 	}
 
+	idp.Logger.Println("Starting SessionProvider")
 	session := idp.SessionProvider.GetSession(w, r, req)
 	if session == nil {
 		// If GetSession returns nil, it must have written an HTTP response, per the interface
@@ -280,6 +282,7 @@ func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Re
 	}
 
 	var err error
+	idp.Logger.Printf("Starting GetServiceProvider")
 	req.ServiceProviderMetadata, err = idp.ServiceProviderProvider.GetServiceProvider(r, serviceProviderID)
 	if err == os.ErrNotExist {
 		idp.Logger.Printf("cannot find service provider: %s", serviceProviderID)
@@ -291,6 +294,7 @@ func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	idp.Logger.Printf("Starting range req.ServiceProviderMetadata.SPSSODescriptors")
 	// find an ACS endpoint that we can use
 	for _, spssoDescriptor := range req.ServiceProviderMetadata.SPSSODescriptors {
 		for _, endpoint := range spssoDescriptor.AssertionConsumerServices {
@@ -318,6 +322,7 @@ func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	idp.Logger.Printf("Starting AssertionMaker")
 	assertionMaker := idp.AssertionMaker
 	if assertionMaker == nil {
 		assertionMaker = DefaultAssertionMaker{}
