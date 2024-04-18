@@ -333,6 +333,7 @@ func (idp *IdentityProvider) ServeIDPInitiated(w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	idp.Logger.Printf("Starting responseWriter req:%s session:%s", req, session)
 	if err := req.WriteResponse(w); err != nil {
 		idp.Logger.Printf("failed to write response: %s", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
